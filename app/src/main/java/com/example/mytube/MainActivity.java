@@ -9,6 +9,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText searchEdit;
@@ -26,13 +32,29 @@ public class MainActivity extends AppCompatActivity {
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 String query = searchEdit.getText().toString();
                 if (!TextUtils.isEmpty(query)) {
-                    String[] array = { query + " 1", query + " 2", query + " 3" };
-                    searchList.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array));
+                    new SearchTask(MainActivity.this).execute(query);
                 }
             }
         });
+    }
+
+    public void setResult(JSONObject result) {
+        try {
+            JSONArray items = result.getJSONArray("items");
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+                JSONObject snippet = item.getJSONObject("snippet");
+                String title = snippet.getString("title");
+                list.add(title);
+            }
+            String[] array = list.toArray(new String[list.size()]);
+            searchList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, array));
+        } catch (Exception e) {
+            // ignore
+        }
     }
 }

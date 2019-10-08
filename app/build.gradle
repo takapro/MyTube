@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        def properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def YOUTUBE_KEY = properties.getProperty('youtube.key')
+        buildConfigField 'String', 'YOUTUBE_KEY', "\"${YOUTUBE_KEY}\""
     }
     buildTypes {
         release {
